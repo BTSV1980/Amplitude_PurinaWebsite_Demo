@@ -68,7 +68,10 @@
       '<label for="mfn">First name</label><input class="field" id="mfn" value="' + f + '"><label for="mem">Email</label><input class="field" id="mem" type="email" value="' + em + '">' +
       '<div style="display:flex;gap:10px"><button class="btn" id="mcreate">Create account</button><button class="btn line" id="mcancel">Not now</button></div>';
     $('#modal').classList.add('open');
-    $('#mcancel').onclick = function () { $('#modal').classList.remove('open'); };
+    $('#mcancel').onclick = function () {
+      track('Sign Up Dismissed', { trigger: trigger, page_path: location.pathname, dismiss_method: 'not_now_button' });
+      $('#modal').classList.remove('open');
+    };
     $('#mcreate').onclick = function () {
       var hex = ''; for (var i = 0; i < 12; i++) hex += Math.floor(Math.random() * 16).toString(16);
       var u = { id: 'pur-' + hex, first: $('#mfn').value || f, email: $('#mem').value || em };
