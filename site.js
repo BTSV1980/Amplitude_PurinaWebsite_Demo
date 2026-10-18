@@ -74,7 +74,8 @@
     };
     $('#mcreate').onclick = function () {
       var hex = ''; for (var i = 0; i < 12; i++) hex += Math.floor(Math.random() * 16).toString(16);
-      var u = { id: 'pur-' + hex, first: $('#mfn').value || f, email: $('#mem').value || em };
+      var existing = null; try { existing = window.amplitude.getUserId(); } catch (e) {}
+      var u = { id: existing || ('pur-' + hex), first: $('#mfn').value || f, email: $('#mem').value || em };
       localStorage.setItem('pc_user', JSON.stringify(u));
       try { window.amplitude.setUserId(u.id); var id = new window.amplitude.Identify(); id.set('email', u.email); id.set('has_mypurina_account', true); window.amplitude.identify(id); } catch (e) {}
       track('Account Created', { method: 'email', trigger: trigger });
@@ -176,7 +177,7 @@
     io.observe($('#read-marker'));
   };
   pages.food_finder = function (m) {
-    var steps = [['Pet type', 'Who are we feeding?', ['Dog', 'Cat']], ['Age', 'How old is your pet?', ['Puppy or kitten', 'Adult', 'Senior']],
+    var steps = [['Pet type', 'Who are we feeding?', ['A dog', 'A cat']], ['Age', 'How old is your pet?', ['Puppy or kitten', 'Adult', 'Senior']],
       ['Size & activity', 'How would you describe them?', ['Small and relaxed', 'Medium and playful', 'Large and very active']], ['Health needs', 'Anything we should know?', ['Sensitive stomach', 'Weight management', 'Skin and coat', 'None of these']]];
     var st = 0, ans = [];
     track('Food Finder Started', { pet_type: 'unknown', platform_surface: 'web' });
@@ -187,7 +188,7 @@
         '<h1 style="font-size:46px">' + s[1] + '</h1><div class="opts">' + s[2].map(function (o) { return '<button class="opt" aria-pressed="false" data-opt="' + esc(o) + '">' + esc(o) + '</button>'; }).join('') + '</div></div></div>';
     }
     function result() {
-      var pet = ans[0] === 'Cat' ? 'cat' : 'dog';
+      var pet = ans[0] === 'A cat' ? 'cat' : 'dog';
       var pick = PRODUCTS.filter(function (p) { return p.pet === pet && p.cat === 'dry_food'; })[ans[3] === 'Sensitive stomach' ? 1 : 0];
       track('Food Finder Completed', { pet_type: pet, platform_surface: 'web', results_count: 10 });
       track('Food Recommendation Viewed', { product_name: pick.name, brand: pick.brand, rank: 1, platform_surface: 'web' });
